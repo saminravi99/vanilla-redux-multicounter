@@ -1,6 +1,7 @@
+//Capturing DOM Elements
 const countersContainer = document.getElementById("counters-container");
 const addCounter = document.getElementById("add-counter");
-const resetCounter = document.getElementById("remove-counter");
+const resetCounter = document.getElementById("reset-counter");
 
 //Action Identifiers
 const ADD_COUNTER = "ADD_COUNTER";
@@ -42,7 +43,7 @@ const decrementCounterAction = (counterID) => {
   };
 };
 
-// initial state for adding counters to the container
+// Initial State
 let initialState = {
   counters: [
     {
@@ -58,6 +59,7 @@ let initialState = {
 // create store with reducer
 const store = Redux.createStore(addCounterReducer);
 
+//Callback Function to Add a newCounter
 const newCounter = () => {
   const newCounter = document.createElement("div");
   store.getState().counters.forEach((counter) => {
@@ -95,7 +97,8 @@ const newCounter = () => {
   countersContainer.appendChild(newCounter);
 };
 
-const resetCounters = () => {
+//Callback Function to Reset Counters to 0
+const resetAllCounter = () => {
   countersContainer.innerHTML = "";
   store.getState().counters.map((counter) => {
     const newCounter = document.createElement("div");
@@ -132,7 +135,7 @@ const resetCounters = () => {
   });
 };
 
-// reducer function to add counter
+// Reducer Function
 function addCounterReducer(state = initialState, action) {
   if (action.type === ADD_COUNTER) {
     return {
@@ -144,7 +147,7 @@ function addCounterReducer(state = initialState, action) {
     return {
       ...state,
       counters: state.counters.map((counter) => {
-        if (counter.counterID === Number(action.payload.id)) {
+        if (counter.counterID + 1 === Number(action.payload.id)) {
           return {
             ...counter,
             value: counter.value + counter.incrementBy,
@@ -159,7 +162,8 @@ function addCounterReducer(state = initialState, action) {
     return {
       ...state,
       counters: state.counters.map((counter) => {
-        if (counter.counterID === action.payload.id) {
+        if (counter.counterID + 1 === Number(action.payload.id)) {
+
           return {
             ...counter,
             value: counter.value - counter.decrementBy,
@@ -171,7 +175,6 @@ function addCounterReducer(state = initialState, action) {
     };
   }
   if (action.type === RESET_COUNTERS) {
-    //reset all counters to 0
     return {
       ...state,
       counters: state.counters.map((counter) => {
@@ -185,7 +188,7 @@ function addCounterReducer(state = initialState, action) {
   return state;
 }
 
-//Click Handlers
+//Click Handlers for buttons
 let previousState;
 let currentState;
 addCounter.addEventListener("click", () => {
@@ -200,15 +203,7 @@ addCounter.addEventListener("click", () => {
 
 resetCounter.addEventListener("click", () => {
   store.dispatch(resetCounterAction());
-  resetCounters();
-});
-
-//Initial render
-newCounter();
-
-//Subscribe to store changes
-store.subscribe(() => {
-  console.log(store.getState());
+  resetAllCounter();
 });
 
 function increment(counterID, incrementBy) {
@@ -222,3 +217,11 @@ function decrement(counterID, decrementBy) {
   document.getElementById(counterID).innerText =
     Number(document.getElementById(counterID).innerText) - Number(decrementBy);
 }
+
+//Subscribe to store changes
+store.subscribe(() => {
+  console.log(store.getState());
+});
+
+//Initial render
+newCounter();
