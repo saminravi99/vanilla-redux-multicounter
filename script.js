@@ -61,9 +61,9 @@ const store = Redux.createStore(counterReducer);
 
 //Callback Function to Add a newCounter
 const newCounter = () => {
-  const newCounter = document.createElement("div");
+  const newCounterEl = document.createElement("div");
   store.getState().counters.forEach((counter) => {
-    newCounter.innerHTML = `
+    newCounterEl.innerHTML = `
     <div
          
           class="p-4 h-auto flex flex-col items-center justify-center space-y-5 bg-white rounded shadow"
@@ -94,7 +94,7 @@ const newCounter = () => {
     `;
   });
 
-  countersContainer.appendChild(newCounter);
+  countersContainer.appendChild(newCounterEl);
 };
 
 //Callback Function to Reset Counters to 0
