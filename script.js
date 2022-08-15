@@ -57,7 +57,7 @@ let initialState = {
 };
 
 // create store with reducer
-const store = Redux.createStore(addCounterReducer);
+const store = Redux.createStore(counterReducer);
 
 //Callback Function to Add a newCounter
 const newCounter = () => {
@@ -136,7 +136,7 @@ const resetAllCounter = () => {
 };
 
 // Reducer Function
-function addCounterReducer(state = initialState, action) {
+function counterReducer(state = initialState, action) {
   if (action.type === ADD_COUNTER) {
     return {
       counters: [...state.counters, action.payload],
@@ -189,16 +189,9 @@ function addCounterReducer(state = initialState, action) {
 }
 
 //Click Handlers for buttons
-let previousState;
-let currentState;
 addCounter.addEventListener("click", () => {
-  previousState = store.getState();
-
   store.dispatch(addCounterAction());
-  currentState = store.getState();
-  if (previousState?.counters !== currentState?.counters) {
-    newCounter();
-  }
+  newCounter();
 });
 
 resetCounter.addEventListener("click", () => {
