@@ -1,12 +1,58 @@
 const countersContainer = document.getElementById("counters-container");
 const addCounter = document.getElementById("add-counter");
-const removeCounter = document.getElementById("remove-counter");
+const resetCounter = document.getElementById("remove-counter");
 
-// intial state for adding counters to the container
-let intialState = {
-  counter1: 0,
-  counters: 1,
-  counter1Payload: 1,
+//Action Identifiers
+const ADD_COUNTER = "ADD_COUNTER";
+const INCREMENT = "INCREMENT";
+const DECREMENT = "DECREMENT";
+const RESET_COUNTERS = "RESET_COUNTERS";
+
+//Action Creators
+const addCounterAction = () => {
+  return {
+    type: ADD_COUNTER,
+    payload: {
+      counterID: store.getState().totalCounters,
+      value: 0,
+      incrementBy: Math.floor(Math.random() * 10) + 1,
+      decrementBy: Math.floor(Math.random() * 10) + 1,
+    },
+  };
+};
+const resetCounterAction = () => {
+  return {
+    type: RESET_COUNTERS,
+  };
+};
+const incrementCounterAction = (counterID) => {
+  return {
+    type: INCREMENT,
+    payload: {
+      id: counterID,
+    },
+  };
+};
+const decrementCounterAction = () => {
+  return {
+    type: DECREMENT,
+    payload: {
+      id: counterID,
+    },
+  };
+};
+
+// initial state for adding counters to the container
+let initialState = {
+  counters: [
+    {
+      counterID: 0,
+      value: 0,
+      incrementBy: Math.floor(Math.random() * 10) + 1,
+      decrementBy: Math.floor(Math.random() * 10) + 1,
+    },
+  ],
+  totalCounters: 1,
 };
 
 // create store with reducer
@@ -14,110 +60,126 @@ const store = Redux.createStore(addCounterReducer);
 
 const newCounter = () => {
   const newCounter = document.createElement("div");
-  newCounter.innerHTML = `
-     <div
-         id="counter${intialState.counters + 1}"
+  store.getState().counters.forEach((counter) => {
+    newCounter.innerHTML = `
+    <div
+         
           class="p-4 h-auto flex flex-col items-center justify-center space-y-5 bg-white rounded shadow"
         >
           <div 
-            id="counter${store.getState().counters}-value"
-          class="text-2xl font-semibold">0</div>
+            id="${counter.counterID + 1}"
+          class="text-2xl font-semibold">
+            ${counter.value}
+          </div>
           <div class="flex space-x-3">
             <button
-                id="increment-${intialState.counters + 1}"
-                onclick="increment('counter${
-                  store.getState().counters
-                }', 'counter${store.getState().counters}-value')"
+                id="increment-${counter.counterID}"
+                onclick="increment('${counter.counterID + 1}', '${
+      counter.incrementBy
+    }')"
              class="bg-indigo-400 text-white px-3 py-2 rounded shadow">
-              Increment By ${
-                store.getState()[`counter${store.getState().counters}Payload`]
-              }
-            </button>
+              Increment By ${counter.incrementBy}
             <button 
-                id="decrement-${intialState.counters + 1}"
-                onclick="decrement('counter${
-                  store.getState().counters
-                }', 'counter${store.getState().counters}-value')"
+                id="decrement-${initialState.counters + 1}"
+                onclick="decrement('${counter.counterID + 1}', '${
+      counter.decrementBy
+    }')"
             class="bg-red-400 text-white px-3 py-2 rounded shadow">
-              Decrement By ${
-                store.getState()[`counter${store.getState().counters}Payload`]
-              }
+              Decrement By ${counter.decrementBy}
             </button>
           </div>
         </div>
     `;
+  });
+
   countersContainer.appendChild(newCounter);
 };
 
-const resetCounter = () => {
+const resetCounters = () => {
+  countersContainer.innerHTML = "";
+  store.getState().counters.map((counter) => {
     const newCounter = document.createElement("div");
     newCounter.innerHTML = `
-     <div id="counter1">
-         <div
-          
+   <div
+         
           class="p-4 h-auto flex flex-col items-center justify-center space-y-5 bg-white rounded shadow"
         >
           <div 
-          id="counter1-value"
-           class="text-2xl font-semibold">0</div>
+            id="${counter.counterID + 1}"
+          class="text-2xl font-semibold">
+            ${counter.value}
+          </div>
           <div class="flex space-x-3">
             <button
-            id="increment-1"
-            onclick="increment('counter1', 'counter1-value')"
+                id="increment-${counter.counterID}"
+                onclick="increment('${counter.counterID + 1}', '${
+      counter.incrementBy
+    }')"
              class="bg-indigo-400 text-white px-3 py-2 rounded shadow">
-              Increment By 1
-            </button>
+              Increment By ${counter.incrementBy}
             <button 
-            id="decrement-1"
-            onclick="decrement('counter1', 'counter1-value')"
+                id="decrement-${initialState.counters + 1}"
+                onclick="decrement('${counter.counterID + 1}', '${
+      counter.decrementBy
+    }')"
             class="bg-red-400 text-white px-3 py-2 rounded shadow">
-              Decrement By 1
+              Decrement By ${counter.decrementBy}
             </button>
           </div>
         </div>
-       </div>
     `;
-    countersContainer.innerHTML = "";
     countersContainer.appendChild(newCounter);
-}
+  });
+};
 
 // reducer function to add counter
-function addCounterReducer(state = intialState, action) {
-  if (action.type === "ADD_COUNTER") {
+function addCounterReducer(state = initialState, action) {
+  if (action.type === ADD_COUNTER) {
     return {
-      ...state,
-      [`counter${state.counters + 1}`]: 0,
-      [`counter${state.counters + 1}Payload`]: Number(
-        (Math.random() * 10).toFixed(0)
-      ),
-      counters: state.counters + 1,
+      counters: [...state.counters, action.payload],
+      totalCounters: state.totalCounters + 1,
     };
   }
-  if (action.type === "INCREMENT") {
-    console.log(
-      state[`${action.payload.id}`] + state[`${action.payload.id}Payload`]
-    );
-    console.log(action.payload.id);
-    console.log(state[`${action.payload.id}`]);
-    console.log(state[`${action.payload.id}Payload`]);
+  if (action.type === INCREMENT) {
     return {
       ...state,
-      [`${action.payload.id}`]:
-        state[`${action.payload.id}`] + state[`${action.payload.id}Payload`],
+      counters: state.counters.map((counter) => {
+        if (counter.counterID === Number(action.payload.id)) {
+          return {
+            ...counter,
+            value: counter.value + counter.incrementBy,
+          };
+        } else {
+          return counter;
+        }
+      }),
     };
   }
-  if (action.type === "DECREMENT") {
+  if (action.type === DECREMENT) {
     return {
       ...state,
-      [`${action.payload.id}`]:
-        state[`${action.payload.id}`] - state[`${action.payload.id}Payload`],
+      counters: state.counters.map((counter) => {
+        if (counter.counterID === action.payload.id) {
+          return {
+            ...counter,
+            value: counter.value - counter.decrementBy,
+          };
+        } else {
+          return counter;
+        }
+      }),
     };
   }
-  if (action.type === "REMOVE_COUNTER") {
+  if (action.type === RESET_COUNTERS) {
+    //reset all counters to 0
     return {
-      counter1: 0,
-      counters: 1,
-      counter1Payload: 1,
+      ...state,
+      counters: state.counters.map((counter) => {
+        return {
+          ...counter,
+          value: 0,
+        };
+      }),
     };
   }
   return state;
@@ -129,44 +191,34 @@ let currentState;
 addCounter.addEventListener("click", () => {
   previousState = store.getState();
 
-  store.dispatch({
-    type: "ADD_COUNTER",
-  });
+  store.dispatch(addCounterAction());
   currentState = store.getState();
   if (previousState?.counters !== currentState?.counters) {
-    console.log(previousState?.counters !== currentState?.counters);
     newCounter();
   }
 });
 
-removeCounter.addEventListener("click", () => {
-    console.log("hello")
-  store.dispatch({
-    type: "REMOVE_COUNTER",
-  });
+resetCounter.addEventListener("click", () => {
+  store.dispatch(resetCounterAction());
+  resetCounters();
 });
+
+//Initial render
+newCounter();
 
 //Subscribe to store changes
 store.subscribe(() => {
   console.log(store.getState());
 });
 
-function increment(id, counterValue) {
-  store.dispatch({
-    type: "INCREMENT",
-    payload: {
-      id: id,
-    },
-  });
-  document.getElementById(counterValue).innerText = store.getState()[id];
+function increment(counterID, incrementBy) {
+  store.dispatch(incrementCounterAction(counterID));
+  document.getElementById(counterID).innerText =
+    Number(document.getElementById(counterID).innerText) + Number(incrementBy);
 }
 
-function decrement(id, counterValue) {
-  store.dispatch({
-    type: "DECREMENT",
-    payload: {
-      id: id,
-    },
-  });
-  document.getElementById(counterValue).innerText = store.getState()[id];
+function decrement(counterID, decrementBy) {
+  store.dispatch(decrementCounterAction(counterID));
+  document.getElementById(counterID).innerText =
+    Number(document.getElementById(counterID).innerText) - Number(decrementBy);
 }
