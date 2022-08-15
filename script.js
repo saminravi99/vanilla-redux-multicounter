@@ -33,7 +33,7 @@ const incrementCounterAction = (counterID) => {
     },
   };
 };
-const decrementCounterAction = () => {
+const decrementCounterAction = (counterID) => {
   return {
     type: DECREMENT,
     payload: {
